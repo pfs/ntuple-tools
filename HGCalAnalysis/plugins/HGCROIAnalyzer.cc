@@ -1,5 +1,4 @@
 #include "RecoNtuples/HGCalAnalysis/plugins/HGCROIAnalyzer.h"
-#include "RecoNtuples/HGCalAnalysis/interface/SimTools.h"
 
 #include "DetectorDescription/OfflineDBLoader/interface/GeometryInfoDump.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
@@ -13,6 +12,10 @@
 #include "DataFormats/GeometryVector/interface/Basic3DVector.h"
 
 #include "CLHEP/Units/GlobalSystemOfUnits.h"
+
+#include "RecoEgamma/EgammaMCTools/interface/PhotonMCTruthFinder.h"
+#include "RecoEgamma/EgammaMCTools/interface/PhotonMCTruth.h"
+#include "RecoEgamma/EgammaMCTools/interface/ElectronMCTruth.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/Exception.h"
@@ -72,15 +75,10 @@ GlobalPoint HGCROIAnalyzer::projectHitPositionAt(float z,float eta,float phi){
 //
 void HGCROIAnalyzer::analyze( const edm::Event &iEvent, const edm::EventSetup &iSetup)
 {
+
   recHitTools_.getEventSetup(iSetup);
   edm::ESHandle<HGCalGeometry> geomHandle;
   iSetup.get<IdealGeometryRecord>().get("HGCalEESensitive",geomHandle);
-  //int totalLayers=geomHandle.product()->topology().dddConstants().layers(true);
-  //std::map<int,float> layerZ;
-  //for(int i=0; i<totalLayers; i++){
-  //  layerZ[i]=geomHandle.product()->topology().dddConstants().waferZ(i,true);
-  //  layerZ[-i]=geomHandle.product()->topology().dddConstants().waferZ(-i,true);
-  //}
 
   //read the generated primary vertex
   edm::Handle<edm::HepMCProduct> mcHandle;
@@ -90,10 +88,23 @@ void HGCROIAnalyzer::analyze( const edm::Event &iEvent, const edm::EventSetup &i
                       primaryVertex->position().y() / 10.,
                       primaryVertex->position().z() / 10.,
                       primaryVertex->position().t());
+
+
+  //check MC truth on photons (from hard process, converted, unconverted)
+  /*
+  edm::Handle<std::vector<SimTrack>> simTracksHandle;
+  iEvent.getByToken(simTracks_, simTracksHandle);
+  edm::Handle<std::vector<SimVertex>> simVerticesHandle;
+  iEvent.getByToken(simVertices_, simVerticesHandle);
+  PhotonMCTruthFinder mcTruth;
+  std::vector<PhotonMCTruth> photons=mcTruth.find(*(simTracksHandle.product()),*(simVerticesHandle.product()));
+  for(auto a:photons){
+    bool isConverted(a.isAConversion()>0);
+  }
+  */
   
   //read gen level particles
   slimmedROIs_->clear();
-  std::vector<size_t> selGenPartIdx;
   edm::Handle<std::vector<reco::GenParticle> > genParticlesHandle;
   iEvent.getByToken(genParticles_, genParticlesHandle);
   for(size_t i = 0; i < genParticlesHandle->size(); ++i )  {    
@@ -103,12 +114,8 @@ void HGCROIAnalyzer::analyze( const edm::Event &iEvent, const edm::EventSetup &i
     if(fabs(p.eta())<1.5 || fabs(p.eta())>2.9) continue;
     SlimmedROI photon(p.pt(),p.eta(),p.phi(),p.mass(),22);
     slimmedROIs_->push_back(photon);
-    selGenPartIdx.push_back(i);
   }
-  if(slimmedROIs_->size()!=2) return;
-
-  TLorentzVector mrr(slimmedROIs_->at(0).p4()+slimmedROIs_->at(1).p4());
-  if(fabs(mrr.M()-125)>5) return;
+  if(slimmedROIs_->size()==0) return;
 
   //shift ROIs in phi to create control ROIs for noise/pileup control
   for(size_t ir=0; ir<2; ir++) {
@@ -120,22 +127,6 @@ void HGCROIAnalyzer::analyze( const edm::Event &iEvent, const edm::EventSetup &i
       slimmedROIs_->push_back(noise);
     }
   }
-
-  //check that particles reached HGCAL
-  //edm::Handle<std::vector<SimTrack>> simTracksHandle;
-  //iEvent.getByToken(simTracks_, simTracksHandle);
-  //edm::Handle<std::vector<SimVertex>> simVerticesHandle;
-  //iEvent.getByToken(simVertices_, simVerticesHandle);
-  //edm::Handle<std::vector<int>> genBarCodesHandle;
-  //iEvent.getByToken(genBarCodes_, genBarCodesHandle);
-  //bool noConversion(true);
-  //for(auto gidx : selGenPartIdx)
-  //  {
-  //    //sim tracks and vertices      
-  //    math::XYZVectorD hitPos=getInteractionPosition(simTracksHandle.product(),simVerticesHandle.product(),genBarCodesHandle->at(gidx));
-  //    if(hitPos.z()<310) noConversion=false;     
-  //  }
-  //if(!noConversion) return;
   
   //collect rec hits in regions of interest
   slimmedHits_->clear();

@@ -31,8 +31,15 @@ process.source = cms.Source("PoolSource",
 try:
     import os
     inDir=options.inputFiles
-    process.source.fileNames.extend([os.path.join(inDir,f) for f in os.listdir('/eos/cms/%s'%inDir)])
-    print len(process.source.fileNames),'files found in',inDir 
+    if not '.root' in inDir:
+        allFiles=[os.path.join(inDir,f) for f in os.listdir('/eos/cms/%s'%inDir)]
+        process.source.fileNames.extend(allFiles)
+        print len(process.source.fileNames),'files found in',inDir 
+    else:
+        print 'Processing only',inDir
+        inDir=inDir.replace('/eos/cms','')
+        process.source.fileNames.extend([inDir])
+
 except:
     print 'could not parse input directory, using default'
     process.source.fileNames.extend(['/store/cmst3/user/psilva/HGCal/H125gg_EE/CMSSW_9_3_2/DIGI_PU00_0p0/RECO/Events_24.root'])

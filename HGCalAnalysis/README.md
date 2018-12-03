@@ -46,12 +46,12 @@ do cmsRun ../test/occAnalysisConfig.py tag=tag_name
 Once the histogram file is available one can summarize the profile of a given distribution using the following script
 
 ```
-python test/createProfileSummaries.py --var var_name -i occ_analysis_tag_name.root -o occ_plots;
+python  scripts/createOccProfileSummaries.py --doBusy --var var_name -i occ_analysis_tag_name.root -o occ_plots;
 ```
 
 The profiles can be furthermore compared with
 
 ```
-python test/plotProfileSummaries.py -o occ_plots/tag1vstag2 -i occ_plots/occ_summary_tag_name_1.root:"tag1",summary/occ_summary_tag_name_2.root:"tag2"
+python scripts/plotOccProfiles.py -o occ_plots/tag1vstag2 -i occ_plots/occ_summary_tag_name_1.root:"tag1",summary/occ_summary_tag_name_2.root:"tag2"
 ```
  

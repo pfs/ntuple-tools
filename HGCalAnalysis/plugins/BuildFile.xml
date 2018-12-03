@@ -7,6 +7,9 @@
 <use name="DetectorDescription/OfflineDBLoader"/>
 <use name="DataFormats/VertexReco"/>
 <use name="SimG4CMS/Calo"/>
+<use name="RecoEgamma/EgammaMCTools"/>
+<use name="RecoEgamma/EgammaTools"/>
+<use name="RecoEgamma/EgammaPhotonAlgos" />
 <use name="CondFormats/GeometryObjects"/>
 <use name="DataFormats/ForwardDetId"/>
 <use name="DataFormats/HGCDigi"/>

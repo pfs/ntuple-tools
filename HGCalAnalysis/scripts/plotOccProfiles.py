@@ -59,7 +59,7 @@ def fillSummaryPlots(var,fileList):
 
     return allH
 
-def showSummaryPlots(hcoll,var,outDir,bin,ytitle):
+def showSummaryPlots(hcoll,var,outDir,bin,ytitle,yran=(1e-6,1)):
     """loops over the plot collection and shows the plots"""
 
     ROOT.gROOT.SetBatch(True)
@@ -94,13 +94,14 @@ def showSummaryPlots(hcoll,var,outDir,bin,ytitle):
             frame.Reset('ICE')
             frame.Draw()
 
-            frame.GetYaxis().SetRangeUser(1e-6,1)
+            frame.GetYaxis().SetRangeUser(yran[0],yran[1])
             frame.GetXaxis().SetRangeUser(1,nbinsproj+1)
             frame.GetXaxis().SetLabelSize(0.05)
             frame.GetXaxis().SetTitleSize(0.05)
             frame.GetYaxis().SetLabelSize(0.04)
             frame.GetYaxis().SetTitleSize(0.05)
             frame.GetYaxis().SetTitleOffset(1.0)
+            frame.GetXaxis().SetTitleOffset(1.0)
             frame.GetXaxis().SetTitle( getattr(hcoll[0][thr],'Get%saxis'%projattr)().GetTitle() )
             frame.GetYaxis().SetTitle(ytitle)
             frame.Draw()
@@ -180,7 +181,7 @@ def showSummaryPlots(hcoll,var,outDir,bin,ytitle):
                 gr.GetYaxis().SetLabelSize(0.04)
                 gr.GetYaxis().SetTitleSize(0.05)
                 gr.GetYaxis().SetTitleOffset(1.0)
-                gr.GetYaxis().SetRangeUser(1e-6,1)
+                gr.GetYaxis().SetRangeUser(yran[0],yran[1])
                 gr.GetXaxis().SetTitle( getattr(hcoll[0][thr],'Get%saxis'%projattr)().GetTitle() )
                 drawOpt='same'
                 leg.AddEntry(gr,gr.GetTitle(),'p')
@@ -203,13 +204,16 @@ def main():
     parser.add_option('-o', '--out',         dest='output',      help='output directory [%default]',         default='summary', type='string')
     parser.add_option(      '--var',         dest='var',         help='variable to profile  [%default]',     default='occ',     type='string')
     parser.add_option(      '--title',       dest='title',       help='title for the y-axis  [%default]',    default='Occupancy / cell (median)',    type='string')
+    parser.add_option(      '--yran',        dest='yran',        help='y range (csv list ymin:ymax,...) [%default]',   default='1e-6,1',      type='string')
     (opt, args) = parser.parse_args()
+
+    yran=[float(x) for x in opt.yran.split(',')]
 
     os.system('mkdir -p %s'%opt.output)
     fileList=[x.split(':') for x in opt.input.split(',')]
     allH=fillSummaryPlots(var=opt.var,fileList=fileList)
     for bin in ['X','Y']:
-        showSummaryPlots(hcoll=allH,var=opt.var,outDir=opt.output,bin=bin,ytitle=opt.title)
+        showSummaryPlots(hcoll=allH,var=opt.var,outDir=opt.output,bin=bin,ytitle=opt.title,yran=yran)
 
 if __name__ == "__main__":
     sys.exit(main())

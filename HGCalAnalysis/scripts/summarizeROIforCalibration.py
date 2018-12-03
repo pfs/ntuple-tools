@@ -44,17 +44,22 @@ def main(url_in=sys.argv[1],url_out=sys.argv[2]):
         varvals=[]
 
         #mc truth
-        for r in roiList:
-            genP4=roiList[r].genP4
+        for ir in xrange(0,2):
+            genP4=ROOT.TLorentzVector(0,0,0,0)
+            if ir in roiList:
+                genP4=roiList[ir].genP4
             varvals += [genP4.E(),genP4.Eta(),genP4.Phi()]
             
         #results for the 3 different regions
         for ireg in xrange(1,4):
-            for r in roiList:
-                recP4    = roiList[r].getReconstructedP4(ireg)
-                noise    = roiList[r].getNoiseInRing(ireg)/5. #averaged over 5 different regions
-                varvals += [recP4.E(),noise]
-        
+            for ir in xrange(0,2):
+                recP4=ROOT.TLorentzVector(0,0,0,0)
+                noise=0.
+                if ir in roiList:
+                    recP4    = roiList[ir].getReconstructedP4(ireg)
+                    noise    = roiList[ir].getNoiseInRing(ireg)/5. #averaged over 5 different regions
+                varvals += [recP4.E(),noise]        
+
         #all done
         output_tuple.Fill(array.array("f",varvals))
 

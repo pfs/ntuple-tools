@@ -1,0 +1,20 @@
+executable = /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/test/runOccAnalysis.sh
+output     = /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/test/condor_$(ClusterId).out
+error      = /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/test/condor_$(ClusterId).err
+log        = /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/test/condor_$(ClusterId).log
++JobFlavour = "workday"
+
+arguments = $(filename) /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/ROI_analysis/Chunks/ROISummary_DIGI_PU0_0p0_$(ProcId).root
+queue filename matching (/eos/cms/store/cmst3/user/psilva/HGCal/H125gg_EE/CMSSW_9_3_2/DIGI_PU0_0p0/RECO/*.root)
+
+arguments = $(filename) /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/ROI_analysis/Chunks/ROISummary_DIGI_PU140_0p0_$(ProcId).root
+queue filename matching (/eos/cms/store/cmst3/user/psilva/HGCal/H125gg_EE/CMSSW_9_3_2/DIGI_PU140_0p0/RECO/*.root)
+
+arguments = $(filename) /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/ROI_analysis/Chunks/ROISummary_DIGI_PU200_0p0_$(ProcId).root
+queue filename matching (/eos/cms/store/cmst3/user/psilva/HGCal/H125gg_EE/CMSSW_9_3_2/DIGI_PU200_0p0/RECO/*.root)
+
+arguments = $(filename) /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/ROI_analysis/Chunks/ROISummary_DIGI_PU140_0p6_$(ProcId).root
+queue filename matching (/eos/cms/store/cmst3/user/psilva/HGCal/H125gg_EE/CMSSW_9_3_2/DIGI_PU140_0p6/RECO/*.root)
+
+arguments = $(filename) /afs/cern.ch/user/p/psilva/work/HGCal/Electronics/CMSSW_9_3_2/src/RecoNtuples/HGCalAnalysis/ROI_analysis/Chunks/ROISummary_DIGI_PU200_0p6_$(ProcId).root
+queue filename matching (/eos/cms/store/cmst3/user/psilva/HGCal/H125gg_EE/CMSSW_9_3_2/DIGI_PU200_0p6/RECO/*.root)
